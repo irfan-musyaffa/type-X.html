@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>typeX</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; overflow: hidden; text-align: center; }
+        #game-screen { position: relative; width: 100vw; height: 80vh; border-bottom: 2px solid #333; }
+        .enemy { position: absolute; font-size: 20px; font-weight: bold; transition: top 0.1s linear; }
+        #input-area { margin-top: 20px; }
+        input { background: #222; color: #fff; border: 1px solid #0f0; padding: 10px; font-size: 20px; outline: none; }
+        #stats { color: white; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="stats">SKOR: <span id="score">0</span></div>
+    <div id="game-screen" id="screen"></div>
+    
+    <div id="input-area">
+        <input type="text" id="typer" autofocus placeholder="Ketik di sini..." autocomplete="off">
+    </div>
+
+    <script>
+        const screen = document.getElementById('game-screen');
+        const typer = document.getElementById('typer');
+        const scoreElement = document.getElementById('score');
+        const words = ["ROKET", "FISH", "PLANET", "ASTEROID", "GEMINI", "CODING", "THE", "ANGKASA", "ALIEN", "BULAN"];
+        
+        let enemies = [];
+        let score = 0;
+
+        function createEnemy() {
+            const word = words[Math.floor(Math.random() * words.length)];
+            const div = document.createElement('div');
+            div.className = 'enemy';
+            div.innerText = word;
+            div.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+            div.style.top = '0px';
+            screen.appendChild(div);
+            enemies.push({ element: div, word: word, top: 0 });
+        }
+
+        function update() {
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                enemies[i].top += 2; // Kecepatan jatuh
+                enemies[i].element.style.top = enemies[i].top + 'px';
+
+                // Jika menyentuh bawah
+                if (enemies[i].top > window.innerHeight * 0.75) {
+                    alert("GAME OVER! Skor kamu: " + score);
+                    location.reload();
+                }
+            }
+        }
+
+        typer.addEventListener('input', () => {
+            const text = typer.value.toUpperCase();
+            for (let i = 0; i < enemies.length; i++) {
+                if (enemies[i].word === text) {
+                    enemies[i].element.remove();
+                    enemies.splice(i, 1);
+                    score += 10;
+                    scoreElement.innerText = score;
+                    typer.value = "";
+                    break;
+                }
+            }
+        });
+
+        setInterval(createEnemy, 2000); // Muncul musuh tiap 2 detik
+        setInterval(update, 50); // Gerakan jatuh
+    </script>
+</body>
+</html>
